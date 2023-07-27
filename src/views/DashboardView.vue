@@ -34,9 +34,13 @@ const getEmployees = () => {
 }
 
 watch(limit, () => {
+  if (currentPage.value > 1) currentPage.value = 1
   getEmployees()
 })
-watch(currentPage, () => {
+watch([currentPage, limit], ( newValue, oldValue) => {
+  if (newValue[1] !== oldValue[1]){
+    return false
+  }
   getEmployees()
 })
 
@@ -140,9 +144,9 @@ aside.fixed.h-screen.border-r(class="w-[280px] py-[24px] px-[32px] bg-[#ffffff] 
           .flex.items-center.w-56.justify-end.gap-2
             span(class="text-[#A0AEC0] text-xs") Mostranto 1 a {{ employeesData.length }} de {{ total }}
             select(v-model="limit" class="basis-4/12 h-[32px] border border-gray-300 w-full py-2 px-2 focus:outline-none focus:border-focus hover:border-focus rounded-[10px]")
-              option(value="10") 10
-              option(value="20") 20
-              option(value="50") 50
+              option(:value="10") 10
+              option(:value="20") 20
+              option(:value="50") 50
 </template>
 
 <style>
