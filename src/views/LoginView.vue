@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia"
 import { ref, computed, defineAsyncComponent } from 'vue'
+import { useAuth } from '@/stores/auth'
+
+const authStore = useAuth()
+
+const refEmail = ref('')
+const refPassword = ref('')
+
 const logoCulqi = computed(
   () =>
     new URL(
@@ -7,20 +15,24 @@ const logoCulqi = computed(
       import.meta.url
     ).href
 )
-const img = computed(
+const imgXL = computed(
   () =>
     new URL(
       `@/assets/images/img.jpg`,
       import.meta.url
     ).href
 )
+const login = () => {
+  authStore.loginUser(refEmail.value, refPassword.value)
+  console.log('login')
+}
 </script>
 
 <template lang="pug">
 main.flex
   .h-screen(class="w-1/2 left bg-culqi-primary")
     div(class="h-[66%] w-full border-b-[6px]").border-focus
-      img.object-cover(class="w-full h-full" :src="img" alt="image")
+      img.object-cover(class="w-full h-full" :src="imgXL" alt="image")
     .flex.flex-col.items-center(class="h-[34%] py-[50px]")
       div(class="px-5 max-w-[720px]")
         h1
@@ -31,23 +43,26 @@ main.flex
   .h-screen.flex.justify-center.items-center.relative(class="w-1/2")
     .w-full(class="max-w-[480px] px-5")
       h3.text-2xl.font-bold.mb-5.text-center Iniciar sesión
-      .group-input.mb-6
-        label(class="block mb-2.5 text-sm") Correo electrónico #[span(class="text-red-600") *]
-        input.input-text(
-          autocomplete="off"
-          type="email"
-          placeholder="Ingresa el correo electrónico"
-        )
-      .group-input.mb-6
-        label(class="block mb-2.5 text-sm") Contraseña #[span(class="text-red-600") *]
-        input.input-text(
-          autocomplete="off"
-          type="password"
-          placeholder="Ingresa la contraseña"
-        )
-      v-icon(name="la-exclamation-circle-solid" scale="1" class="text-[#E03137]")
-      span(class="text-[12px] text-[#E03137]") Correo o contraseña incorrectos
-      button.bg-culqi-primary.text-white.w-full.px-6.mt-6(class="py-[20px] rounded-[10px]") Iniciar sesión
+      form(@submit.prevent="login")
+        .group-input.mb-6
+          label(class="block mb-2.5 text-sm") Correo electrónico #[span(class="text-red-600") *]
+          input.input-text(
+            autocomplete="off"
+            type="email"
+            v-model="refEmail"
+            placeholder="Ingresa el correo electrónico"
+          )
+        .group-input.mb-6
+          label(class="block mb-2.5 text-sm") Contraseña #[span(class="text-red-600") *]
+          input.input-text(
+            autocomplete="off"
+            type="password"
+            v-model="refPassword"
+            placeholder="Ingresa la contraseña"
+          )
+        v-icon(name="la-exclamation-circle-solid" scale="1" class="text-[#E03137]")
+        span(class="text-[12px] text-[#E03137]") Correo o contraseña incorrectos
+      button.bg-culqi-primary.text-white.w-full.px-6.mt-6(type="submit" class="py-[20px] rounded-[10px]" @click="login") Iniciar sesión
       .flex.justify-center.items-center.mt-6
         span.text-culqi-primary.text-sm.text-greyscale-500.mr-1(href="#") ¿Eres nuevo aquí?
         a.text-culqi-primary.text-sm.text-focus(href="javascript:;") Crea una cuenta
