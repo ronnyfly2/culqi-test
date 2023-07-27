@@ -131,10 +131,10 @@ aside.fixed.h-screen.border-r(class="w-[280px] py-[24px] px-[32px] bg-[#ffffff] 
                   span.block(class="text-[#A0AEC0]") No se encontraron resultados
       .flex.mt-6.justify-between.items-center
         .group-buttons.flex(v-if="total > 0")
-          button.rounded.border.w-8.h-8.text-xs
+          button.rounded.border.w-8.h-8.text-xs(class="mr-2" @click="currentPage = currentPage - 1" :disabled="currentPage === 1")
             v-icon(name="la-angle-left-solid" scale="1")
-          button.rounded.border.w-8.h-8.text-xs(v-for="page in Math.ceil(total/limit)" :key="page" @click="currentPage = page" ) {{ page }}
-          button.rounded.border.w-8.h-8.text-xs
+          button.w-8.h-8.text-xs(v-for="page in Math.ceil(total/limit)" :key="page" @click="currentPage = page" :class="currentPage===page?'bg-gray-100 rounded':''") {{ page }}
+          button.rounded.border.w-8.h-8.text-xs(class="ml-2" @click="currentPage = currentPage + 1" :disabled="currentPage === Math.ceil(total/limit)")
             v-icon(name="la-angle-right-solid" scale="1")
         .group
           .flex.items-center.w-56.justify-end.gap-2
