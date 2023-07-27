@@ -6,33 +6,31 @@ const authService = new AuthService()
 
 export const useAuth = defineStore('auth', {
   state: () => ({
-    loggedIn: Session.getToken() ? true : false,
-    loginError: [],
+    loginError: '',
     user: Session.getJWTData() || {},
     accessToken: Session.getToken() || '',
     loading: false,
   }),
   getters: {
-    isLoggedIn: (state) => state.loggedIn,
+
   },
 
   actions: {
     async loginUser(correo: string, password: string) {
       this.loading = true
+      this.loginError = ''
       const res = await authService.getLogin(correo, password)
         .then((response) => {
-          console.log('response', response)
           this.accessToken = response.data.token
           this.user = response.data.user
           Session.setToken(this.accessToken)
           Session.setJWTData(this.user)
-          this.loggedIn = true
-          // window.location.reload()
+          window.location.reload()
           this.loading = false
           return true
         })
         .catch((error) => {
-          this.loginError = error.response
+          this.loginError = error.data.message
           this.loading = false
           return false
         })

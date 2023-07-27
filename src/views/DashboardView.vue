@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { storeToRefs } from "pinia"
 import { useAuth } from '@/stores/auth'
 import { useEmployee } from '@/stores/employee'
@@ -12,6 +12,8 @@ const employeeStore = useEmployee()
 
 const { employeesData, total, loading, cargosList } = storeToRefs(employeeStore)
 const { user } = storeToRefs(authStore)
+
+const limit = ref(10)
 
 const initials = computed(() => `${user.value.nombre.split(' ')[0].charAt(0)}${user.value.nombre.split(' ')[1].charAt(0)}`)
 
@@ -27,8 +29,13 @@ const logout = () => {
 }
 
 const getEmployees = () => {
-  employeeStore.getEmployees(16, 1)
+  employeeStore.getEmployees(limit.value, 1)
 }
+
+watch(limit, () => {
+  getEmployees()
+})
+
 getEmployees()
 </script>
 <template lang="pug">
@@ -118,12 +125,21 @@ aside.fixed.h-screen.border-r(class="w-[280px] py-[24px] px-[32px] bg-[#ffffff] 
               td(class="py-[18px] px-[16px]" colspan="6")
                 .flex.justify-center.items-center
                   span.block(class="text-[#A0AEC0]") No se encontraron resultados
-      .flex.mt-6
-        button.rounded.border.w-8.h-8.text-xs
-          v-icon(name="la-angle-left-solid" scale="1")
-        button.rounded.border.w-8.h-8.text-xs 1
-        button.rounded.border.w-8.h-8.text-xs
-          v-icon(name="la-angle-right-solid" scale="1")
+      .flex.mt-6.justify-between.items-center
+        .group-buttons.flex
+          button.rounded.border.w-8.h-8.text-xs
+            v-icon(name="la-angle-left-solid" scale="1")
+          button.rounded.border.w-8.h-8.text-xs 1
+          button.rounded.border.w-8.h-8.text-xs
+            v-icon(name="la-angle-right-solid" scale="1")
+        .group
+          .flex.items-center.w-56.justify-end.gap-2
+            span(class="text-[#A0AEC0] text-xs") Mostranto 1 a {{ employeesData.length }} de {{ total }}
+            select(v-model="limit" class="basis-4/12 h-[32px] border border-gray-300 w-full py-2 px-2 focus:outline-none focus:border-focus hover:border-focus rounded-[10px]")
+              option(value="10") 10
+              option(value="20") 20
+              option(value="50") 50
+              option(value="100") 100
 </template>
 
 <style>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { storeToRefs } from "pinia"
-import { ref, computed, defineAsyncComponent } from 'vue'
 import { useAuth } from '@/stores/auth'
 
 const authStore = useAuth()
 
+const { loginError } = storeToRefs(authStore)
+
 const refEmail = ref('')
 const refPassword = ref('')
+const refError = ref()
 
 const logoCulqi = computed(
   () =>
@@ -22,9 +25,13 @@ const imgXL = computed(
       import.meta.url
     ).href
 )
-const login = () => {
-  authStore.loginUser(refEmail.value, refPassword.value)
-  console.log('login')
+const login = async () => {
+  if (refEmail.value === '' || refPassword.value === '') {
+    refError.value = 'Los campos * son obligatorios'
+    return false
+  }
+  await authStore.loginUser(refEmail.value, refPassword.value)
+  refError.value = loginError.value || ''
 }
 </script>
 
@@ -60,8 +67,9 @@ main.flex
             v-model="refPassword"
             placeholder="Ingresa la contraseña"
           )
-        v-icon(name="la-exclamation-circle-solid" scale="1" class="text-[#E03137]")
-        span(class="text-[12px] text-[#E03137]") Correo o contraseña incorrectos
+        .flex.items-center(v-if="refError")
+          v-icon(name="la-exclamation-circle-solid" scale="1" class="text-[#E03137]")
+          span(class="text-[12px] text-[#E03137]") {{ refError }}
       button.bg-culqi-primary.text-white.w-full.px-6.mt-6(type="submit" class="py-[20px] rounded-[10px]" @click="login") Iniciar sesión
       .flex.justify-center.items-center.mt-6
         span.text-culqi-primary.text-sm.text-greyscale-500.mr-1(href="#") ¿Eres nuevo aquí?

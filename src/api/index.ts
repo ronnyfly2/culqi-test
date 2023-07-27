@@ -95,11 +95,6 @@ class Api {
         // Handle Unauthorized
         // Handle session_expired
         // console.log('error', error.data.message === 'Unauthorized')
-        if (error.data.code === 'session_expired') {
-          console.log('error', error.data.code)
-        } else {
-          user.logout()
-        }
         break
       }
       case StatusCode.TooManyRequests: {
