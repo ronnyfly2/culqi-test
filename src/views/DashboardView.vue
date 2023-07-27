@@ -14,6 +14,7 @@ const { employeesData, total, loading, cargosList } = storeToRefs(employeeStore)
 const { user } = storeToRefs(authStore)
 
 const limit = ref(10)
+const currentPage = ref(1)
 
 const initials = computed(() => `${user.value.nombre.split(' ')[0].charAt(0)}${user.value.nombre.split(' ')[1].charAt(0)}`)
 
@@ -29,10 +30,13 @@ const logout = () => {
 }
 
 const getEmployees = () => {
-  employeeStore.getEmployees(limit.value, 1)
+  employeeStore.getEmployees(limit.value, currentPage.value)
 }
 
 watch(limit, () => {
+  getEmployees()
+})
+watch(currentPage, () => {
   getEmployees()
 })
 
@@ -126,10 +130,10 @@ aside.fixed.h-screen.border-r(class="w-[280px] py-[24px] px-[32px] bg-[#ffffff] 
                 .flex.justify-center.items-center
                   span.block(class="text-[#A0AEC0]") No se encontraron resultados
       .flex.mt-6.justify-between.items-center
-        .group-buttons.flex
+        .group-buttons.flex(v-if="total > 0")
           button.rounded.border.w-8.h-8.text-xs
             v-icon(name="la-angle-left-solid" scale="1")
-          button.rounded.border.w-8.h-8.text-xs 1
+          button.rounded.border.w-8.h-8.text-xs(v-for="page in Math.ceil(total/limit)" :key="page" @click="currentPage = page" ) {{ page }}
           button.rounded.border.w-8.h-8.text-xs
             v-icon(name="la-angle-right-solid" scale="1")
         .group
@@ -139,7 +143,6 @@ aside.fixed.h-screen.border-r(class="w-[280px] py-[24px] px-[32px] bg-[#ffffff] 
               option(value="10") 10
               option(value="20") 20
               option(value="50") 50
-              option(value="100") 100
 </template>
 
 <style>
